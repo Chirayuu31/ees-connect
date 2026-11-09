@@ -44,8 +44,10 @@ if (!BASE || !ANON) {
   process.exit(1)
 }
 
-const MEMBER_EMAIL = `security-probe-${Date.now().toString(36)}@iiserb.ac.in`
-const MEMBER_PASSWORD = 'probe-member-password-9'
+// hosted deployments: reuse a member fixture via env — never create fresh
+// signups (the shared sender bounces fake domains). Local stacks sign up freely.
+const MEMBER_EMAIL = process.env.TEST_MEMBER_EMAIL ?? `security-probe-${Date.now().toString(36)}@iiserb.ac.in`
+const MEMBER_PASSWORD = process.env.TEST_MEMBER_PASSWORD ?? 'probe-member-password-9'
 let results = []
 let anyFail = false
 

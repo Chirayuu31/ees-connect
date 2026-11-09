@@ -124,6 +124,12 @@ members start attaching images. Never commit dumps — member emails live in
 
 ## Local dev notes
 
+- **Email bounce etiquette (hosted):** never sign up fake addresses on the
+  hosted project — Supabase's shared sender bans bounce-heavy projects. For
+  probe runs on hosted, set `TEST_MEMBER_EMAIL`/`TEST_MEMBER_PASSWORD` in
+  `.env.local` (a fixture member you own) so the suite does a password grant
+  instead of a signup. Local stacks can sign up `*.test` addresses freely.
+
 - **Data persistence:** `npx supabase stop --no-backup` discards the database
   volume (accounts/posts wiped). Use plain `npx supabase stop` when you want
   members and posts to survive a restart.
