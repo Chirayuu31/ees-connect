@@ -57,6 +57,13 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
+  // auth pages: never cached, never bfcache-restored — every revisit is a
+  // fresh server render (prevents the stale signed-in-navbar-on-login-form
+  // back/forward class and re-runs the member auto-redirect above)
+  if (isPublic && path.startsWith('/login') || path.startsWith('/signup')) {
+    response.headers.set('Cache-Control', 'no-store, must-revalidate')
+  }
+
   return response
 }
 
