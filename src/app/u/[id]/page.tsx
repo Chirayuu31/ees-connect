@@ -44,9 +44,9 @@ export default async function ProfilePage({
 
         <header className="card p-6">
           <div className="flex flex-wrap items-center gap-4">
-            <Avatar name={profile.name} size={56} />
+            <Avatar name={profile.name ?? ''} size={56} />
             <div className="min-w-0 flex-1">
-              <h1 className="font-display text-[clamp(1.6rem,2.6vw,2.25rem)] font-semibold leading-tight">{profile.name}</h1>
+              <h1 className="font-display text-[clamp(1.6rem,2.6vw,2.25rem)] font-semibold leading-tight">{profile.name ?? ''}</h1>
               <p className="mt-0.5 text-sm text-muted">
                 {profile.batch ? `Batch of ${profile.batch}` : ''}
                 {profile.batch && profile.field ? ' · ' : ''}
@@ -90,7 +90,7 @@ export default async function ProfilePage({
             <form action={requestMentorship} className="mt-4 rounded-lg bg-background p-3">
               <input type="hidden" name="mentor_id" value={profile.id} />
               <label className="block text-sm font-medium">
-                Ask {profile.name.replace(/^(Dr|Prof|Mr|Ms|Mrs)\.?\s+/i, '').split(' ')[0]} for mentorship
+                Ask {(profile.name ?? '').replace(/^(Dr|Prof|Mr|Ms|Mrs)\.?\s+/i, '').split(' ')[0] ?? 'Member'} for mentorship
               </label>
               <textarea
                 name="message"
@@ -183,7 +183,7 @@ export default async function ProfilePage({
 
         <section className="mt-6">
           <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted">
-            Posts by {profile.name.replace(/^(Dr|Prof|Mr|Ms|Mrs)\.?\s+/i, '').split(' ')[0]} ({posts.length})
+            Posts by {(profile.name ?? '').replace(/^(Dr|Prof|Mr|Ms|Mrs)\.?\s+/i, '').split(' ')[0] ?? 'Member'} ({posts.length})
           </h2>
           {posts.length === 0 ? (
             <div className="card border-dashed p-8 text-center text-sm text-muted col-span-full">

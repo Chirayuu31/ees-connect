@@ -18,7 +18,7 @@ export async function VerifiedGate({ children }: { children: React.ReactNode }) 
         </p>
         <div className="mt-4 rounded-lg bg-background px-4 py-3 text-left text-sm text-muted">
           <p>
-            <span className="font-medium text-foreground">{profile.name}</span>
+            <span className="font-medium text-foreground">{profile.name ?? 'New member'}</span>
           </p>
           <p>{profile.email}</p>
           <p className="mt-2 text-xs">Signed up as alumni · pending approval</p>

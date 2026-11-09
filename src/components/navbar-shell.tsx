@@ -75,10 +75,10 @@ export function NavbarShell({
             className="flex size-7 items-center justify-center rounded-full bg-accent text-[11px] font-semibold text-accent-fg"
             title="Your profile"
           >
-            {profile.name.trim().slice(0, 1).toUpperCase()}
+            {(profile.name ?? '').trim().slice(0, 1).toUpperCase() || 'U'}
           </Link>
           <span className="hidden text-[13px] sm:inline">
-            {profile.name.replace(/^(Dr|Prof|Mr|Ms|Mrs)\.?\s+/i, '').split(' ')[0]}
+            {(profile.name ?? '').split(' ')[0] ?? 'New member'}
           </span>
           <form action={logout}>
             <button
