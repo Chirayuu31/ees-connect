@@ -5,16 +5,12 @@ import type { Profile, Post, CommentRow, ChatMessage, PostType, Role } from '@/l
 
 export const getCurrentProfile = cache(async (): Promise<Profile | null> => {
   const supabase = await createSupabaseServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return null
-
-  const { data } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single()
-
-  return data as Profile | null
+  // 0011: single roundtrip (RLS-bound by the session token; auth.uid() comes
+  // from the token itself — no auth.getUser network stop, no extra query)
+  const { data, error } = await supabase.rpc('current_member')
+  if (error || !data || (Array.isArray(data) && data.length === 0)) return null
+  const row = Array.isArray(data) ? data[0] : data
+  return (row as Profile) ?? null
 })
 
 // --- posts ---
