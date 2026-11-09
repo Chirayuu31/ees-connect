@@ -1,0 +1,157 @@
+@import "tailwindcss";
+
+/* class-based theming: `dark` set by the user's toggle, defaulting to OS pref */
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  /* geology tokens: limestone paper, conifer ink, ore accents */
+  --background: #faf9f5;
+  --foreground: #22301f;
+  --surface: #fffefb;
+  --surface-2: #f3f1e9;
+  --line: #e6e2d5;
+  --muted: #6d756c;
+  --accent: #2d6a4f;
+  --accent-strong: #24553e;
+  --accent-fg: #fdfcf8;
+  --accent-soft: rgb(45 106 79 / 0.10);
+  --tag-question: #0e7490;
+  --tag-opportunity: #b45309;
+  --tag-resource: #2d6a4f;
+  --tag-discussion: #6d756c;
+  --shadow-card: 0 1px 2px rgb(34 48 31 / 0.05), 0 4px 16px -6px rgb(34 48 31 / 0.10);
+  --shadow-lift: 0 2px 4px rgb(34 48 31 / 0.06), 0 14px 32px -10px rgb(34 48 31 / 0.18);
+}
+
+.dark {
+  --background: #131613;
+  --foreground: #ecf0e8;
+  --surface: #1b211c;
+  --surface-2: #171d18;
+  --line: #2d342b;
+  --muted: #99a294;
+  --accent: #5aa87d;
+  --accent-strong: #71b98f;
+  --accent-fg: #10150e;
+  --accent-soft: rgb(90 168 125 / 0.12);
+  --tag-question: #3ea6c9;
+  --tag-opportunity: #d8973c;
+  --tag-resource: #5aa87d;
+  --tag-discussion: #99a294;
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 4px 16px -6px rgb(0 0 0 / 0.38);
+  --shadow-lift: 0 2px 4px rgb(0 0 0 / 0.35), 0 14px 32px -10px rgb(0 0 0 / 0.52);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-soft: var(--accent-soft);
+  --color-question: var(--tag-question);
+  --color-opportunity: var(--tag-opportunity);
+  --color-resource: var(--tag-resource);
+  --color-discussion: var(--tag-discussion);
+  --font-sans: var(--font-geist-sans);
+  --font-display: var(--font-fraunces);
+  --font-mono: var(--font-geist-mono);
+}
+
+html {
+  overflow-x: clip;
+  /* fluid scale: 14px on phones -> 16px at ~1440 -> 17.5px on large screens.
+     every rem-based Tailwind size (text + spacing) scales with it. */
+  font-size: clamp(14px, 10px + 0.42vw, 17.5px);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-feature-settings: "ss01" off, "cv05" on;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* drawn scrollbars, from the palette */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--foreground) 20%, transparent) transparent;
+}
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--foreground) 16%, transparent);
+  border-radius: 5px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+*::-webkit-scrollbar-track { background: transparent; }
+
+/* ————— motion layer ————— */
+
+/* the one entrance: hero lines rise, soft blur settles */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.rise { animation: rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.rise-2 { animation-delay: 0.1s; }
+.rise-3 { animation-delay: 0.2s; }
+.rise-4 { animation-delay: 0.3s; }
+
+/* hover layer: underline draws itself */
+@utility link-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.25s ease;
+  &:hover { background-size: 100% 1px; }
+}
+
+/* press: controls sink one pixel */
+.btnpress:active { transform: translateY(1px); }
+
+/* surface system */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+}
+.card-hover:hover {
+  box-shadow: var(--shadow-lift);
+  border-color: color-mix(in srgb, var(--foreground) 18%, var(--line));
+  transform: translateY(-2px);
+}
+
+/* pill chip: type + status labels */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 20px;
+  padding: 0 10px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise { animation: none; }
+  .card, .card-hover { transition: none; }
+}
