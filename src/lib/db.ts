@@ -268,10 +268,10 @@ export async function getThread(me: Profile, partnerId: string) {
   }
 }
 
-export async function unreadCount(): Promise<number> {
+export const unreadCount = cache(async (): Promise<number> => {
   // one RPC round trip (migration 0006) — no separate count query
   const supabase = await createSupabaseServerClient()
   const { data } = await supabase.rpc('nav_unread_count')
   return (data as number | null) ?? 0
-}
+})
 

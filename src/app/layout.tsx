@@ -1,11 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Fraunces } from "next/font/google";
 import Script from "next/script";
-import Link from "next/link";
 import "./globals.css";
-import { ThemeToggle } from "@/components/theme-toggle";
-
-
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,6 +25,10 @@ export const metadata: Metadata = {
     "The Earth & Environmental Sciences community platform of IISER Bhopal. Students and alumni sharing doubts, opportunities, resources and mentorship.",
 };
 
+// root owns only the document shell + theme init. All chrome (navbar,
+// footers) is owned by the route-group layouts: (app) renders member chrome
+// and (auth) renders the guest header — this split is what prevents any
+// member UI from leaking onto the sign-in/sign-up screens.
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
@@ -49,25 +49,3 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
-
-function Footer() {
-  return (
-    <footer className="border-t border-line bg-background/60 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 py-6 text-center sm:flex-row sm:text-left">
-        <p className="font-display text-sm font-semibold">
-          EES<span className="text-accent">·</span>Connect
-          <span className="ml-3 font-sans text-[11px] font-normal leading-5 text-muted">
-            Earth &amp; Environmental Sciences, IISER Bhopal
-          </span>
-        </p>
-        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted">
-          <Link href="/feed" className="link-underline">Feed</Link>
-          <Link href="/directory" className="link-underline">People</Link>
-          <Link href="/tags" className="link-underline">Tags</Link>
-          <Link href="/settings" className="link-underline">Settings</Link>
-        </div>
-      </div>
-    </footer>
-  );
-}
-

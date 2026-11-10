@@ -1,8 +1,13 @@
 import Link from 'next/link'
+import { GuestHeader } from '@/components/guest-header'
+import { Footer } from '@/components/guest-footer'
 
 export default function NotFound() {
   return (
-    <div className="mx-auto my-16 max-w-md text-center">
+    <>
+      <GuestHeader />
+      <main className="w-full flex-1">
+      <div className="mx-auto my-16 max-w-md text-center">
       <p className="font-display text-6xl font-semibold text-accent">404</p>
       <h1 className="font-display mt-3 text-2xl font-semibold">That page doesn&apos;t exist</h1>
       <p className="mt-2 text-sm text-muted">
@@ -24,5 +29,8 @@ export default function NotFound() {
         </Link>
       </div>
     </div>
+      </main>
+      <Footer />
+    </>
   )
 }
