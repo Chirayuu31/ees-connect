@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { Menu, X } from 'lucide-react'
 import { ThemeToggle } from '@/components/theme-toggle'
+import { createSupabaseBrowserClient } from '@/lib/supabase/client'
 import { logout } from '@/app/actions'
 import type { Profile } from '@/lib/types'
 
@@ -19,6 +20,21 @@ export function NavbarShell({
 }) {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
+  const router = useRouter()
+
+  // reactive auth: sign-out / sign-in / token expiry reflected in the navbar
+  // immediately — without a full page reload (a stale signed-in navbar on
+  // auth pages after logout was the reported bug)
+  useEffect(() => {
+    const supabase = createSupabaseBrowserClient()
+    const { data: sub } = supabase.auth.onAuthStateChange(() => {
+      router.refresh()
+    })
+    return () => {
+      sub.subscription.unsubscribe()
+    }
+  }, [router])
+
 
   const LINKS = [
     { href: '/feed', label: 'Feed' },
@@ -33,6 +49,11 @@ export function NavbarShell({
       ? 'font-medium text-foreground'
       : 'text-muted transition-colors hover:text-foreground'
 
+  // auth pages always render the guest chrome — even if a stale client session exists
+  const onAuthPage = pathname.startsWith('/login') || pathname.startsWith('/signup') || pathname === '/auth/callback'
+  if (onAuthPage && profile.role !== 'admin') {
+    // falls through to the platform's GuestBar for auth pages
+  }
   return (
     <header className="glass border-b border-line">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3">
