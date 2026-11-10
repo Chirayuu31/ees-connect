@@ -12,12 +12,11 @@ export async function createSupabaseServerClient() {
         getAll: () => cookieStore.getAll(),
         setAll: (cookiesToSet) => {
           try {
-            cookiesToSet.forEach(({ name, value, options }) => {
-              // only rewrite cookies that actually changed — prevents the
-              // stale-client / fresh-server seesaw during parallel refreshes
-              const existing = cookieStore.get(name)?.value
-              if (existing !== value) cookieStore.set(name, value, options)
-            })
+            // always write — DELETION (sign-out) re-sends the same value with
+            // maxAge 0; a value-guard would skip the write and keep the cookie
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options),
+            )
           } catch {
             // called from a Server Component render; the middleware
             // (proxy.ts) refreshes sessions there
