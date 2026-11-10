@@ -130,6 +130,20 @@ members start attaching images. Never commit dumps — member emails live in
   `.env.local` (a fixture member you own) so the suite does a password grant
   instead of a signup. Local stacks can sign up `*.test` addresses freely.
 
+- **PENDING — custom SMTP (Resend).** Supabase sent a bounce warning for veoms
+  on 2026-11-10 (2 bounced probe confirmations; fixtures since deleted, and the
+  probe now refuses hosted signups without `TEST_MEMBER_EMAIL`). Until a custom
+  SMTP exists, the default sender stays restricted (~2 emails/h, bounce-sensitive),
+  so member confirmation/reset emails are the only traffic. When ready (~15 min):
+  1. Resend dashboard: add owned domain → paste MX + SPF + DKIM DNS records → verify
+  2. Resend: create API key (`re_…`, sending access)
+  3. Supabase dashboard (veoms) → Authentication → SMTP Settings → enable custom
+     SMTP: host `smtp.resend.com`, port `465`, user `resend`, password = `re_…`
+     key, sender `no-reply@<your-domain>` ("EES Connect")
+  4. Same page: raise the rate limit above the post-SMTP default (30 emails/h)
+  5. Send the test email the form offers. Note: Resend auth emails need an owned
+     domain (`@iiserb.ac.in` can't be registered by us) — buy ~$10/yr first if none.
+
 - **Data persistence:** `npx supabase stop --no-backup` discards the database
   volume (accounts/posts wiped). Use plain `npx supabase stop` when you want
   members and posts to survive a restart.
