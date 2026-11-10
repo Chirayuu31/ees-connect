@@ -6,6 +6,7 @@ import "./globals.css";
 import { NavbarShell } from "@/components/navbar-shell";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { getCurrentProfile, unreadCount } from "@/lib/db";
+import { Analytics } from "@vercel/analytics/next";
 import type { Profile } from "@/lib/types";
 
 const geistSans = Geist({
@@ -46,6 +47,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           }}
         />
         <Root>{children}</Root>
+      <Analytics />
       </body>
     </html>
   );
