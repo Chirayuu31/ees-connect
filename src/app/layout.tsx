@@ -5,8 +5,8 @@ import Link from "next/link";
 import "./globals.css";
 import { NavbarShell } from "@/components/navbar-shell";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { NavGate } from "@/components/nav-gate";
 import { getCurrentProfile, unreadCount } from "@/lib/db";
-import { Analytics } from "@vercel/analytics/next";
 import type { Profile } from "@/lib/types";
 
 const geistSans = Geist({
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     "The Earth & Environmental Sciences community platform of IISER Bhopal. Students and alumni sharing doubts, opportunities, resources and mentorship.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
@@ -47,7 +47,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           }}
         />
         <Root>{children}</Root>
-      <Analytics />
       </body>
     </html>
   );
@@ -58,37 +57,50 @@ async function Root({ children }: { children: React.ReactNode }) {
   const unread = profile ? await unreadCount() : 0;
   return (
     <>
-      {profile ? (
-        <NavbarShell
-          profile={profile as Profile}
-          unread={unread}
-          admin={profile.role === "admin" && profile.verified}
-        />
-      ) : (
-        <GuestBar />
+      {/* navbar renders for members; hidden entirely on auth pages,
+          where the (auth)-layout GuestHeader owns the top bar */}
+      {profile && (
+        <NavGate>
+          <NavbarShell
+            profile={profile as Profile}
+            unread={unread}
+            admin={profile.role === "admin" && profile.verified}
+          />
+        </NavGate>
+      )}
+      {!profile && (
+        <NavGate auth>
+          <GuestBar />
+        </NavGate>
       )}
       <main className="w-full flex-1">{children}</main>
-      <footer className="border-t border-line bg-background/60 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 py-6 text-center sm:flex-row sm:text-left">
-          <p className="font-display text-sm font-semibold">
-            EES<span className="text-accent">·</span>Connect
-            <span className="ml-3 font-sans text-[11px] font-normal leading-5 text-muted">
-              Earth &amp; Environmental Sciences, IISER Bhopal
-            </span>
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted">
-            <Link href="/feed" className="link-underline">Feed</Link>
-            <Link href="/directory" className="link-underline">People</Link>
-            <Link href="/tags" className="link-underline">Tags</Link>
-            {profile ? (
-              <Link href="/settings" className="link-underline">Settings</Link>
-            ) : (
-              <Link href="/login" className="link-underline">Sign in</Link>
-            )}
-          </div>
-        </div>
-      </footer>
+      <Footer signed={!!profile} />
     </>
+  );
+}
+
+function Footer({ signed }: { signed: boolean }) {
+  return (
+    <footer className="border-t border-line bg-background/60 backdrop-blur">
+      <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 py-6 text-center sm:flex-row sm:text-left">
+        <p className="font-display text-sm font-semibold">
+          EES<span className="text-accent">·</span>Connect
+          <span className="ml-3 font-sans text-[11px] font-normal leading-5 text-muted">
+            Earth &amp; Environmental Sciences, IISER Bhopal
+          </span>
+        </p>
+        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-muted">
+          <Link href="/feed" className="link-underline">Feed</Link>
+          <Link href="/directory" className="link-underline">People</Link>
+          <Link href="/tags" className="link-underline">Tags</Link>
+          {signed ? (
+            <Link href="/settings" className="link-underline">Settings</Link>
+          ) : (
+            <Link href="/login" className="link-underline">Sign in</Link>
+          )}
+        </div>
+      </div>
+    </footer>
   );
 }
 

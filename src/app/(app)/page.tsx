@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { MessagesSquare, Compass, BookOpen, Sprout } from 'lucide-react'
-import strata from '../../public/folded-strata.jpg'
+import strata from '../../../public/folded-strata.jpg'
 
 const FEATURES = [
   [
