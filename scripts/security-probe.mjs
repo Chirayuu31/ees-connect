@@ -46,6 +46,15 @@ if (!BASE || !ANON) {
 
 // hosted deployments: reuse a member fixture via env — never create fresh
 // signups (the shared sender bounces fake domains). Local stacks sign up freely.
+// Hard guard: on the hosted project a fixture signup ALWAYS sends a real
+// confirmation email to a fake address — bounce warning from Supabase,
+// at-cost of their default-sender reputation. So hosted runs without an
+// explicit TEST_MEMBER_EMAIL refuse to sign up at all.
+const HOSTED = !/^https?:\/\/(127\.0\.0\.1|localhost)/.test(env.NEXT_PUBLIC_SUPABASE_URL)
+if (HOSTED && !process.env.TEST_MEMBER_EMAIL) {
+  console.log('SKIP  hosted project + no TEST_MEMBER_EMAIL — refusing to create a fixture (it would bounce a confirmation email into Supabase default-sender space). Pass TEST_MEMBER_EMAIL/TEST_MEMBER_PASSWORD to run with a real account.')
+  process.exit(0)
+}
 const MEMBER_EMAIL = process.env.TEST_MEMBER_EMAIL ?? `security-probe-${Date.now().toString(36)}@iiserb.ac.in`
 const MEMBER_PASSWORD = process.env.TEST_MEMBER_PASSWORD ?? 'probe-member-password-9'
 let results = []
