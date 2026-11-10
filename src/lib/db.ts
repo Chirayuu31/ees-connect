@@ -10,6 +10,10 @@ export const getCurrentProfile = cache(async (): Promise<Profile | null> => {
   const { data, error } = await supabase.rpc('current_member')
   if (error || !data || (Array.isArray(data) && data.length === 0)) return null
   const row = Array.isArray(data) ? data[0] : data
+  // PostgREST serializes the null composite (zero rows matched, e.g. no
+  // session cookie) as an ALL-NULL object, not null — so an anonymous
+  // request used to render the member navbar. A member always has an id.
+  if (!row?.id) return null
   return (row as Profile) ?? null
 })
 
